@@ -13,6 +13,13 @@ void MATRIX::translate(float x, float y, float z) {
     _31 = 0;     _32 = 0;     _33 = 1;     _34 = z;    
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
+void MATRIX::translate(VECTOR& t)
+{
+    _11 = 1;     _12 = 0;     _13 = 0;     _14 = t.x;
+    _21 = 0;     _22 = 1;     _23 = 0;     _24 = t.y;
+    _31 = 0;     _32 = 0;     _33 = 1;     _34 = t.z;
+    _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;
+}
 void MATRIX::scaling(float x, float y, float z) {
     _11 = x;     _12 = 0;     _13 = 0;     _14 = 0;    
     _21 = 0;     _22 = y;     _23 = 0;     _24 = 0;    
@@ -74,6 +81,12 @@ void MATRIX::mulTranslate( float x, float y, float z ){
 	_24 += _21 * x + _22 * y + _23 * z;
 	_34 += _31 * x + _32 * y + _33 * z;
 }
+void MATRIX::mulTranslate(const VECTOR& t)
+{
+    _14 += _11 * t.x + _12 * t.y + _13 * t.z;
+    _24 += _21 * t.x + _22 * t.y + _23 * t.z;
+    _34 += _31 * t.x + _32 * t.y + _33 * t.z;
+}
 void MATRIX::mulScaling( float x, float y, float z ){
 	_11 *= x;    _12 *= y;    _13 *= z;
 	_21 *= x;    _22 *= y;    _23 *= z;
@@ -95,6 +108,12 @@ void MATRIX::mulRotateX(float r) {
     tmp = _32 * c + _33 * s;
     _33 = _32 * -s + _33 * c;
     _32 = tmp;
+}
+void MATRIX::mulRotateYXZ(const VECTOR& r)
+{
+    mulRotateY(r.y);
+    mulRotateX(r.x);
+    mulRotateZ(r.z);
 }
 void MATRIX::mulRotateY(float r) {
     float c = Cos(r);

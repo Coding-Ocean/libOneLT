@@ -10,7 +10,8 @@ public:
     //s—ñ‚ğ‚Â‚­‚é
     //MATRIX();
     void identity();
-    void translate(float x, float y, float z=0);
+    void translate(float x, float y, float z = 0);
+    void translate(class VECTOR& t);
     void scaling(float x, float y, float z=1);
     void rotateZ(float angle);
     void rotateY(float angle);
@@ -20,10 +21,12 @@ public:
     void ortho(float l, float r, float b, float t, float n, float f);
     //s—ñ“¯m‚ÌŠ|‚¯Z
     void mulTranslate(float x, float y, float z = 0);
+    void mulTranslate(const VECTOR& t);
     void mulScaling(float x, float y, float z = 1);
     void mulRotateZ(float angle);
     void mulRotateY(float angle);
     void mulRotateX(float angle);
+    void mulRotateYXZ(const VECTOR& r);
     MATRIX operator*(const MATRIX& m) const;
     //s—ñ‚ÆƒxƒNƒgƒ‹‚ÌŠ|‚¯Z
     VECTOR operator*(const VECTOR& v) const;
