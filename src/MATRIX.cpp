@@ -1,4 +1,5 @@
 #include "mathUtil.h"
+#include "QUATERNION.h"
 #include "MATRIX.h"
 
 void MATRIX::identity() {
@@ -109,12 +110,6 @@ void MATRIX::mulRotateX(float r) {
     _33 = _32 * -s + _33 * c;
     _32 = tmp;
 }
-void MATRIX::mulRotateYXZ(const VECTOR& r)
-{
-    mulRotateY(r.y);
-    mulRotateX(r.x);
-    mulRotateZ(r.z);
-}
 void MATRIX::mulRotateY(float r) {
     float c = Cos(r);
     float s = Sin(r);
@@ -149,18 +144,30 @@ void MATRIX::mulRotateZ(float r) {
     _32 = _31 * -s + _32 * c;
     _31 = tmp;
 }
+void MATRIX::rotateYXZ(const VECTOR& r)
+{
+    rotateY(r.y);
+    mulRotateX(r.x);
+    mulRotateZ(r.z);
+}
+void MATRIX::mulRotateYXZ(const VECTOR& r)
+{
+    mulRotateY(r.y);
+    mulRotateX(r.x);
+    mulRotateZ(r.z);
+}
 MATRIX MATRIX::operator*(const MATRIX& m) const {
     MATRIX tmp;
 
-    tmp._11 = _11 * m._11 + _12 * m._21 + _13 * m._31 +_14 * m._41;
-    tmp._21 = _21 * m._11 + _22 * m._21 + _23 * m._31 +_24 * m._41;
-    tmp._31 = _31 * m._11 + _32 * m._21 + _33 * m._31 +_34 * m._41;
+    tmp._11 = _11 * m._11 + _12 * m._21 + _13 * m._31 + _14 * m._41;
+    tmp._21 = _21 * m._11 + _22 * m._21 + _23 * m._31 + _24 * m._41;
+    tmp._31 = _31 * m._11 + _32 * m._21 + _33 * m._31 + _34 * m._41;
     tmp._41 = _41 * m._11 + _42 * m._21 + _43 * m._31 + _44 * m._41;
 
-    tmp._12 = _11 * m._12 + _12 * m._22 + _13 * m._32 +_14 * m._42;
-    tmp._22 = _21 * m._12 + _22 * m._22 + _23 * m._32 +_24 * m._42;
-    tmp._32 = _31 * m._12 + _32 * m._22 + _33 * m._32 +_34 * m._42;
-    tmp._42 = _41 * m._12 + _42 * m._22 + _43 * m._32 +_44 * m._42;
+    tmp._12 = _11 * m._12 + _12 * m._22 + _13 * m._32 + _14 * m._42;
+    tmp._22 = _21 * m._12 + _22 * m._22 + _23 * m._32 + _24 * m._42;
+    tmp._32 = _31 * m._12 + _32 * m._22 + _33 * m._32 + _34 * m._42;
+    tmp._42 = _41 * m._12 + _42 * m._22 + _43 * m._32 + _44 * m._42;
 
     tmp._13 = _11 * m._13 + _12 * m._23 + _13 * m._33 + _14 * m._43;
     tmp._23 = _21 * m._13 + _22 * m._23 + _23 * m._33 + _24 * m._43;
@@ -174,7 +181,6 @@ MATRIX MATRIX::operator*(const MATRIX& m) const {
 
     return tmp;
 }
-
 VECTOR MATRIX::operator*(const VECTOR& v) const {
     VECTOR tmp;
     tmp.x = _11 * v.x + _12 * v.y + _13 * v.z + _14;
@@ -182,9 +188,87 @@ VECTOR MATRIX::operator*(const VECTOR& v) const {
     tmp.z = _31 * v.x + _32 * v.y + _33 * v.z + _34;
     //proj‚Æ‚ÌŠ|‚¯ŽZ
     if (_43 < 0) {//‰ž—p‚ª‚«‚©‚È‚¢‚ªA‚±‚ê‚Åproj mat‚Æ”»’f
-        return tmp / (v.z < 0 ? -v.z : v.z);
+        if (v.z != 0) {
+            return tmp / (v.z < 0 ? -v.z : v.z);
+        }
     }
     //projˆÈŠO‚ÌŠ|‚¯ŽZ
     return tmp;
 }
+void MATRIX::rotateQuaternion(const class QUATERNION& q)
+{
+    *this = createMatFromQtn(q);
+}
+void MATRIX::mulRotateQuaternion(const QUATERNION& q)
+{
+    MATRIX t = *this;
+    MATRIX m = createMatFromQtn(q);
 
+    _11 = t._11 * m._11 + t._12 * m._21 + t._13 * m._31;
+    _21 = t._21 * m._11 + t._22 * m._21 + t._23 * m._31;
+    _31 = t._31 * m._11 + t._32 * m._21 + t._33 * m._31;
+    //_41 = t._41 * m._11 + t._42 * m._21 + t._43 * m._31;
+
+    _12 = t._11 * m._12 + t._12 * m._22 + t._13 * m._32;
+    _22 = t._21 * m._12 + t._22 * m._22 + t._23 * m._32;
+    _32 = t._31 * m._12 + t._32 * m._22 + t._33 * m._32;
+    //_42 = t._41 * m._12 + t._42 * m._22 + t._43 * m._32;
+
+    _13 = t._11 * m._13 + t._12 * m._23 + t._13 * m._33;
+    _23 = t._21 * m._13 + t._22 * m._23 + t._23 * m._33;
+    _33 = t._31 * m._13 + t._32 * m._23 + t._33 * m._33;
+    //_43 = t._41 * m._13 + t._42 * m._23 + t._43 * m._33;
+
+    //_14 = t._14;
+    //_24 = t._24;
+    //_34 = t._34;
+    //_44 = t._44;
+
+    /*
+    _11 = t._11 * m._11 + t._12 * m._21 + t._13 * m._31 + t._14 * m._41;
+    _21 = t._21 * m._11 + t._22 * m._21 + t._23 * m._31 + t._24 * m._41;
+    _31 = t._31 * m._11 + t._32 * m._21 + t._33 * m._31 + t._34 * m._41;
+    _41 = t._41 * m._11 + t._42 * m._21 + t._43 * m._31 + t._44 * m._41;
+
+    _12 = t._11 * m._12 + t._12 * m._22 + t._13 * m._32 + t._14 * m._42;
+    _22 = t._21 * m._12 + t._22 * m._22 + t._23 * m._32 + t._24 * m._42;
+    _32 = t._31 * m._12 + t._32 * m._22 + t._33 * m._32 + t._34 * m._42;
+    _42 = t._41 * m._12 + t._42 * m._22 + t._43 * m._32 + t._44 * m._42;
+
+    _13 = t._11 * m._13 + t._12 * m._23 + t._13 * m._33 + t._14 * m._43;
+    _23 = t._21 * m._13 + t._22 * m._23 + t._23 * m._33 + t._24 * m._43;
+    _33 = t._31 * m._13 + t._32 * m._23 + t._33 * m._33 + t._34 * m._43;
+    _43 = t._41 * m._13 + t._42 * m._23 + t._43 * m._33 + t._44 * m._43;
+
+    _14 = t._11 * m._14 + t._12 * m._24 + t._13 * m._34 + t._14 * m._44;
+    _24 = t._21 * m._14 + t._22 * m._24 + t._23 * m._34 + t._24 * m._44;
+    _34 = t._31 * m._14 + t._32 * m._24 + t._33 * m._34 + t._34 * m._44;
+    _44 = t._41 * m._14 + t._42 * m._24 + t._43 * m._34 + t._44 * m._44;
+*/
+}
+
+MATRIX createMatFromQtn(const QUATERNION& q)
+{
+    MATRIX m;
+    m._11 = 1.0f - 2.0f * q.y * q.y - 2.0f * q.z * q.z;
+    m._12 = 2.0f * q.x * q.y - 2.0f * q.w * q.z;
+    m._13 = 2.0f * q.x * q.z + 2.0f * q.w * q.y;
+    m._14 = 0.0f;
+
+    m._21 = 2.0f * q.x * q.y + 2.0f * q.w * q.z;
+    m._22 = 1.0f - 2.0f * q.x * q.x - 2.0f * q.z * q.z;
+    m._23 = 2.0f * q.y * q.z - 2.0f * q.w * q.x;
+    m._24 = 0.0f;
+
+    m._31 = 2.0f * q.x * q.z - 2.0f * q.w * q.y;
+    m._32 = 2.0f * q.y * q.z + 2.0f * q.w * q.x;
+    m._33 = 1.0f - 2.0f * q.x * q.x - 2.0f * q.y * q.y;
+    m._34 = 0.0f;
+
+    m._41 = 0.0f;
+    m._42 = 0.0f;
+    m._43 = 0.0f;
+    m._44 = 1.0f;
+
+    return m;
+}

@@ -32,6 +32,7 @@
     <ClInclude Include="inc\mathUtil.h" />
     <ClInclude Include="inc\MATRIX.h" />
     <ClInclude Include="inc\package.h" />
+    <ClInclude Include="inc\QUATERNION.h" />
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\sound.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
