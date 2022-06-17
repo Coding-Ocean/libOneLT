@@ -1656,9 +1656,20 @@ TEXT_MODE getTextMode() {
 void drawFont(CNTNR::FONT* font, float x, float y){
     World.identity();
     if(TextMode==TOP)
-        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, 
+            y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
     else
-        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    if(TextMode==BOTTOM)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, 
+            y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    else
+    if(TextMode==BCENTER)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x - font->size*0.25f, 
+            y - (float)font->gm.gmptGlyphOrigin.y + font->size*0.5f, 0.0f);
+    else
+    if (TextMode == MBCENTER)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x - font->size * 0.5f,
+                y - (float)font->gm.gmptGlyphOrigin.y + font->size * 0.5f, 0.0f);
     World.mulScaling((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
     World.mulTranslate(0, 0.5f, 0);
     // Update variables that change once per frame

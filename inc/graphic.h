@@ -11,7 +11,7 @@ enum COLOR_MODE { RGB, HSV };
 void colorMode(COLOR_MODE mode, float colorDenominator=255);
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
-enum TEXT_MODE { BOTTOM, TOP };
+enum TEXT_MODE { BOTTOM, TOP, BCENTER, MBCENTER };
 void textMode(TEXT_MODE mode);
 TEXT_MODE getTextMode();
 void clear(const struct COLOR& c);
