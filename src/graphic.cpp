@@ -1796,6 +1796,15 @@ void text(let l, float x, float y) {
     else
         text((double)l, x, y);
 }
+void text(let l, const VECTOR& p, TEXT_MODE mode, const COLOR& c, float size) {
+    textMode(mode);
+    fill(c);
+    textSize(size);
+    if (l.str())
+        text(l.str(), p.x, p.y);
+    else
+        text((double)l, p.x, p.y);
+}
 
 //print function
 float PrintSize = 50;
