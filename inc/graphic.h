@@ -27,6 +27,7 @@ void fill(const struct COLOR& c);
 void fill(float r, float g, float b);
 void fill(float r, float g, float b, float a);
 void fill(float c);
+void noFill();
 void imageColor(const struct COLOR& c);
 void imageColor(float r, float g, float b);
 void imageColor(float r, float g, float b, float a);

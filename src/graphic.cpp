@@ -993,6 +993,13 @@ void fill(float c) {
     FillColor.b = c;
     FillColor.a = 1;
 }
+void noFill()
+{
+    FillColor.r = 0;
+    FillColor.g = 0;
+    FillColor.b = 0;
+    FillColor.a = 0;
+}
 void imageColor(float r, float g, float b) {
     if (ColorMode == RGB) {
         MeshColor.r = r / ColorDenominator;
